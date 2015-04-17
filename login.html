@@ -1,0 +1,206 @@
+<!doctype html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8">
+        <title>User Registration</title>
+        <meta name="description" content="A HTML5 Form Inputs and Storage Practice">
+        <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/modernizr/2.8.3/modernizr.js"></script>
+    </head>
+    <body>
+        <header>
+            <h1>Registration</h1>
+        </header>
+        <section class='main'>
+            <form action="#" method="get" onsubmit="return saveUser()">
+            <table>
+                <tr>
+                    <td>
+                        <label for="first_name">First Name</label>
+                    </td>
+                    <td>
+                        <input type="text" name="first_name" placeholder="Enter first name" required>
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        <label for="last_name">Last Name</label>
+                    </td>
+                    <td>
+                        <input type="text" name="last_name" placeholder="Enter last name" required>
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        <label for="email">Email</label>
+                    </td>
+                    <td>
+                        <input type="email" name="email" placeholder="Enter your email" required>
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        <label for="password">Password</label>
+                    </td>
+                    <td>
+                        <input type="password" name="password" id="password" required>
+                    </td>
+                    <td>
+                        <progress id="strength_bar" max="100" value="80"></progress>
+                        <span id="strength_text"></span>
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        <label for="password_conf">Confirm Password</label>
+                    </td>
+                    <td>
+                        <input type="password" name="password_conf" id="password_conf" required>
+                    </td>
+                    <td>
+                        <span id="not_match_notice">password does not match</span>
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        <label for="dob">DOB</label>
+                    </td>
+                    <td>
+                        <input type="date" name="dob" required>
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        <label for="dob_with_time">DOB with time</label>
+                    </td>
+                    <td>
+                        <input type="datetime" name="dob_with_time" required>
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        <label for="dob_local">local DOB</label>
+                    </td>
+                    <td>
+                        <input type="datetime-local" name="dob_local" required>
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        <label for="ssn">SSN</label>
+                    </td>
+                    <td>
+                        <input type="text" name="ssn" pattern="^\d{3}-?\d{2}-?\d{4}$" required>
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        <label for="phone">Phone</label>
+                    </td>
+                    <td>
+                        <input type="text" name="phone" pattern="^\(?\d{3}\)?\d{3}-?\d{4}$" required>
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        <label for="credit_card">Credit Card NO</label>
+                    </td>
+                    <td>
+                        <input type="text" name="credit_card" pattern="^(\d{12}|\d{16})$" required>
+                    </td>
+                </tr>
+            </table>
+            <button type="submit">Save</button>&nbsp;
+            <button id="loadBtn">Load</button>&nbsp;
+            <button type="reset">Clear</button>
+            </form>
+        </section>
+        <hr>
+        <footer>
+            Class Assignment for CMPE 280
+            <br>
+            No styling is applied
+        </footer>
+        <script type="text/javascript" src="lib.js"></script>
+        <script type="text/javascript">
+            var psw_alert = document.getElementById('not_match_notice'),
+                bar = document.getElementById('strength_bar'),
+                text = document.getElementById('strength_text'),
+                psw1 = document.getElementById('password'),
+                psw2 = document.getElementById('password_conf'),
+                loadBtn = document.getElementById('loadBtn'),
+                user;
+
+            function pswMatchCheck() {
+                if (psw1.value !== psw2.value) {
+                    psw_alert.style.display = "block";
+                } else {
+                    psw_alert.style.display = "none";
+                }
+            }
+            function pswStrengthCheck() {
+                if(!psw1.value.match(/[A-Z]/g) || !psw1.value.match(/[a-z]/g) || !psw1.value.match(/\W/g)) {
+                    bar.value = 10;
+                    text.innerHTML = "strength: low";
+                }
+                else if (psw1.value.match(/[A-Z]/g).length>3 && psw1.value.match(/[a-z]/g).length>2 && psw1.value.match(/\W/g).length>5) {
+                    bar.value = 100;
+                    text.innerHTML = "strength: high";
+                } else if (psw1.value.match(/[A-Z]/g).length>3 && psw1.value.match(/[a-z]/g).length>2 && psw1.value.match(/\W/g).length<=5 && psw1.value.match(/\W/g).length>2) {
+                    bar.value = 66;
+                    text.innerHTML = "strength: medium";
+                } else {
+                    bar.value = 33;
+                    text.innerHTML = "strength: normal";
+                }
+
+                bar.style.display = "block";
+                text.style.display = "block";
+            }
+            function saveUser() {
+                console.log('save is called');
+                var inputs = document.getElementsByTagName('input');
+                var i, elem;
+                for(i=0; i<inputs.length; i++) {
+                    elem = inputs[i];
+                    user[elem.name] = elem.value;
+                }
+                
+                if(!user.isPhoneNumberFormatValid()){
+                    alert('not a valid USA phone number');
+                } else if (!user.isValidEmail()) {
+                    alert('not a valid email address');
+                } else {
+                    User.saveToSessionStorage(user);
+                }
+
+                return false;
+            }
+            function reloadUser() {
+                console.log('save is called');
+
+                var inputs = document.getElementsByTagName('input');
+                var i, elem, attr;
+                user = User.readFromSessionStorage();
+                for(i=0; i<inputs.length; i++) {
+                    elem = inputs[i];
+                    attr = elem.name; 
+                    elem.value = user[attr];
+                }
+            }
+            function init() {
+                user = new User();
+                psw_alert.style.display = "none";
+                bar.style.display = "none";
+                text.style.display = "none";
+                bar.value = 0;
+                text.innerHTML = '';
+                psw1.addEventListener('input', pswStrengthCheck);
+                psw2.addEventListener('input', pswMatchCheck);
+                loadBtn.addEventListener('click', reloadUser);
+            }
+            window.addEventListener('load', init);
+            window.addEventListener('online',  User.onNetworkChange);
+            window.addEventListener('offline', User.onNetworkChange);
+        </script>
+    </body>
+</html>
